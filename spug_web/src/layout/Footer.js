@@ -22,7 +22,7 @@ export default function () {
              rel="noopener noreferrer">文档</a>
         </div>
         <div style={{color: 'rgba(0, 0, 0, .45)'}}>
-          Copyright <CopyrightOutlined/> {new Date().getFullYear()} By OpenSpug
+          Copyright <CopyrightOutlined/> {new Date().getFullYear()} By PunkOS Team
         </div>
       </div>
     </Layout.Footer>

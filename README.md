@@ -34,6 +34,47 @@
 
 更多使用帮助请参考： [使用文档](https://spug.cc/docs/host-manage/)
 
+## 开发
+
+### 启动后端
+1. 安装依赖
+```shell
+pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple/
+```
+
+2. 初始化数据库
+```shell
+python manage.py updatedb
+```
+
+2. 创建管理员账户
+```shell
+python manage.py user add -u admin -p punkos.cc -s -n 管理员
+
+# -u 用户名
+# -p 密码
+# -s 超级管理员
+# -n 用户昵称
+```
+3. 启动api服务
+```shell
+python manage.py runserver
+```
+
+### 启动前端
+1. 安装依赖
+```shell
+cd ./spug_web/
+yarn 
+
+```
+2. 启动web页面
+```shell
+cd ./spug_web/
+yarn start
+
+```
+
 ## 预览
 
 ### 主机管理
