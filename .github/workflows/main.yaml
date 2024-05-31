@@ -1,0 +1,72 @@
+name: CI/CD for punkos_spug
+
+on:
+  push:
+    branches:
+      - punkos_main
+  pull_request:
+    branches:
+      - punkos_main
+
+jobs:
+  backend:
+    runs-on: ubuntu-18.04
+    name: Backend CI/CD
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+
+    - name: Install backend dependencies
+      run: |
+        cd punkos_spug/spug_api
+        pip install -U pip setuptools -i https://pypi.tuna.tsinghua.edu.cn/simple/
+        pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple/
+
+    - name: Apply database migrations
+      run: |
+        cd punkos_spug/spug_api
+        python manage.py updatedb
+
+    - name: Create admin user
+      run: |
+        cd punkos_spug/spug_api
+        python manage.py user add -u admin -p spug.cc -s -n 管理员
+
+    - name: Start backend server
+      run: |
+        cd punkos_spug/spug_api
+        nohup python manage.py runserver &
+
+  frontend:
+    runs-on: ubuntu-18.04
+    name: Frontend CI/CD
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'
+
+    - name: Install frontend dependencies
+      run: |
+        cd punkos_spug/spug_web
+        npm install
+
+    - name: Build frontend
+      run: |
+        cd punkos_spug/spug_web
+        npm run build
+    
+    - name: Deploy frontend
+      run: |
+        npm install -g serve
+        serve -s punkos_spug/spug_web/build -l 3000
