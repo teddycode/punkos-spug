@@ -10,7 +10,7 @@ on:
 
 jobs:
   backend:
-    runs-on: ubuntu-18.04
+    runs-on: self-hosted
     name: Backend CI/CD
 
     steps:
