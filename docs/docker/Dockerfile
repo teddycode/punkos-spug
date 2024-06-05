@@ -1,7 +1,9 @@
 FROM centos:7.9.2009
 
 ENV TZ=Asia/Shanghai
-RUN yum install -y epel-release https://packages.endpointdev.com/rhel/7/os/x86_64/endpoint-repo.x86_64.rpm && yum install -y --setopt=tsflags=nodocs nginx redis mariadb-devel python36 python36-devel openldap-devel supervisor git gcc wget unzip net-tools sshpass rsync sshfs && yum -y clean all --enablerepo='*'
+RUN yum install -y epel-release https://packages.endpointdev.com/rhel/7/os/x86_64/endpoint-repo.x86_64.rpm \
+    && yum install -y --setopt=tsflags=nodocs nginx redis mariadb-devel python36 python36-devel openldap-devel supervisor git gcc wget unzip net-tools sshpass rsync sshfs  \
+    && yum -y clean all --enablerepo='*'
 
 RUN pip3 install --no-cache-dir --upgrade pip -i https://mirrors.aliyun.com/pypi/simple/
 RUN pip3 install --no-cache-dir -i https://mirrors.aliyun.com/pypi/simple/ \
@@ -25,13 +27,19 @@ RUN localedef -c -i en_US -f UTF-8 en_US.UTF-8
 ENV LANG=en_US.UTF-8
 ENV LC_ALL=en_US.UTF-8
 RUN echo -e '\n# Source definitions\n. /etc/profile\n' >> /root/.bashrc
-RUN mkdir -p /data/repos
-COPY init_spug /usr/bin/
-COPY nginx.conf /etc/nginx/
-COPY ssh_config /etc/ssh/
-COPY spug.ini /etc/supervisord.d/
-COPY redis.conf /etc/
-COPY entrypoint.sh /
+RUN mkdir -p /data/repos /data/spug
+COPY docs/docker/init_spug /usr/bin/
+COPY docs/docker/nginx.conf /etc/nginx/
+COPY docs/docker/ssh_config /etc/ssh/
+COPY docs/docker/spug.ini /etc/supervisord.d/
+COPY docs/docker/redis.conf /etc/
+COPY docs/docker/entrypoint.sh /
+
+COPY docs/docker/sqlite-3811.rpm /tmp/
+RUN yum install -y --setopt=tsflags=nodocs  /tmp/sqlite-3811.rpm
+
+COPY spug_web/build /data/spug/spug_web/build
+COPY spug_api /data/spug/spug_api
 
 VOLUME /data
 EXPOSE 80

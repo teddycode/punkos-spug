@@ -1,75 +1,55 @@
-name: CI/CD for punkos_spug
+name: CI/CD Pipeline
 
 on:
   push:
     branches:
-      - punkos_main
+      - punkos-main
   pull_request:
     branches:
-      - punkos_main
+      - punkos-main
 
 jobs:
-  backend:
+  build-and-deploy:
     runs-on: self-hosted
-    name: Backend CI/CD
 
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-    
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: 3.8
-        cache: 'pip' # caching pip dependencies
-
-    - name: Upgrade pip
-      run: python -m pip install --upgrade pip -i https://pypi.tuna.tsinghua.edu.cn/simple/
-
-    - name: Install backend dependencies
-      run: |
-        cd punkos_spug/spug_api
-        pip install -U pip setuptools -i https://pypi.tuna.tsinghua.edu.cn/simple/
-        pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple/
-
-    - name: Apply database migrations
-      run: |
-        cd punkos_spug/spug_api
-        python manage.py updatedb
-
-    - name: Create admin user
-      run: |
-        cd punkos_spug/spug_api
-        python manage.py user add -u admin -p spug.cc -s -n 管理员
-
-    - name: Start backend server
-      run: |
-        cd punkos_spug/spug_api
-        nohup python manage.py runserver &
-
-  frontend:
-    runs-on: self-hosted
-    name: Frontend CI/CD
+    env:
+      DOCKER_REGISTRY: docker.io
+      DOCKER_IMG: ${{ secrets.DOCKER_USER }}/punkos-spug
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
 
     - name: Set up Node.js
-      run: | 
-        nvm use 16.15
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16.15'
 
-    - name: Install frontend dependencies
+    - name: Install dependencies and build frontend
+      working-directory: ./spug_web
       run: |
-        cd punkos_spug/spug_web
         npm install
-
-    - name: Build frontend
-      run: |
-        cd punkos_spug/spug_web
         npm run build
-    
-    - name: Deploy frontend
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USER }}
+        password: ${{ secrets.DOCKER_SECRET }}
+
+    - name: Build and push Docker images
+      working-directory: ./docs/docker
+      uses: docker/build-push-action@v4
+      with:
+        context: .
+        push: true
+        tags: ${{ env.DOCKER_IMG }}:latest
+
+    - name: Deploy to server
+      working-directory: ./docs/docker
       run: |
-        npm install -g serve
-        serve -s punkos_spug/spug_web/build -l 3000
+          docker-compose pull
+          docker-compose up -d
