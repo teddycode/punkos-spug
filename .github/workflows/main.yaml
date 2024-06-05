@@ -41,10 +41,9 @@ jobs:
         password: ${{ secrets.DOCKER_SECRET }}
 
     - name: Build and push Docker images
-      working-directory: ./docs/docker
       uses: docker/build-push-action@v4
       with:
-        context: .
+        context: ./docs/docker
         push: true
         tags: ${{ env.DOCKER_IMG }}:latest
 
