@@ -12,9 +12,6 @@ jobs:
   build-and-deploy:
     runs-on: self-hosted
 
-    env:
-      DOCKER_IMG: teddycode/punkos-spug:latest
-
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
@@ -27,7 +24,6 @@ jobs:
     - name: Install yarn
       run: |
         npm install -g yarn
-        yarn --version
 
     - name: Install dependencies and build frontend
       working-directory: ./spug_web
@@ -52,7 +48,7 @@ jobs:
       with:
         context: ./docs/docker
         push: true
-        tags: ${{ env.DOCKER_IMG }}:latest
+        tags: teddycode/punkos-spug:latest
 
     - name: Deploy to server
       working-directory: ./docs/docker
