@@ -13,7 +13,6 @@ jobs:
     runs-on: self-hosted
 
     env:
-      DOCKER_REGISTRY: docker.io
       DOCKER_IMG: teddycode/punkos-spug:latest
 
     steps:
@@ -38,6 +37,9 @@ jobs:
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
+      id: buildx
+      with:
+        install: true
 
     - name: Log in to Docker Hub
       uses: docker/login-action@v2
