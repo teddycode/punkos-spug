@@ -3,10 +3,10 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - punkos-main
+      - punkos_main
   pull_request:
     branches:
-      - punkos-main
+      - punkos_main
 
 jobs:
   build-and-deploy:
