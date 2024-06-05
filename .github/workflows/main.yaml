@@ -44,11 +44,9 @@ jobs:
         password: ${{ secrets.DOCKER_SECRET }}
 
     - name: Build and push Docker images
-      uses: docker/build-push-action@v4
-      with:
-        context: ./docs/docker
-        push: true
-        tags: teddycode/punkos-spug:latest
+      run: | 
+        docker build -f docs/docker/Dockerfile . -t teddycode/punkos-spug:latest 
+        docker push teddycode/punkos-spug:latest
 
     - name: Deploy to server
       working-directory: ./docs/docker
