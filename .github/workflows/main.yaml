@@ -14,7 +14,7 @@ jobs:
 
     env:
       DOCKER_REGISTRY: docker.io
-      DOCKER_IMG: ${{ secrets.DOCKER_USER }}/punkos-spug
+      DOCKER_IMG: teddycode/punkos-spug:latest
 
     steps:
     - name: Checkout code
@@ -26,13 +26,16 @@ jobs:
         node-version: '16.15'
 
     - name: Install yarn
-      run: npm install -g yarn
+      run: |
+        npm install -g yarn
+        yarn --version
 
     - name: Install dependencies and build frontend
       working-directory: ./spug_web
       run: |
-        yarn install
-        yarn run build
+        pwd
+        yarn 
+        yarn build
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
