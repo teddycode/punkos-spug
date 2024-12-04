@@ -105,3 +105,7 @@ yarn start
 
 ## License 
 [AGPL-3.0](https://opensource.org/licenses/AGPL-3.0)
+
+
+## 更新列表
+- 20241204 : 更新部署服务器
